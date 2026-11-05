@@ -55,9 +55,10 @@ A documentação interativa **Swagger / OpenAPI** fica disponível em:
 - **Node.js** (v18+ ou v20/v22/v24) e **npm** instalados.
 - *(Opcional)* **Docker** caso queira subir uma instância PostgreSQL via `docker-compose up -d`. Por padrão, o projeto já vem configurado com **SQLite Relacional persistido em arquivo (`./data/ecommerce.sqlite`) via TypeORM**, funcionando imediatamente sem precisar instalar SGBD externo!
 
-### Passo 1: Instalar as dependências (caso ainda não estejam instaladas)
-Na raiz do projeto (`c:\desafio`):
+### Passo 1: Clonar o repositório e instalar as dependências
 ```bash
+git clone https://github.com/hitalocods/desafioestagio-.git
+cd desafioestagio-
 npm run install:all
 ```
 
