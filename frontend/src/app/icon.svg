@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="nsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#7C3AED" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+    <linearGradient id="nsGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="#0F172A" />
+  <rect x="2" y="2" width="60" height="60" rx="16" stroke="url(#nsGrad)" stroke-width="2" stroke-opacity="0.6" />
+  <!-- Alça da Sacola -->
+  <path d="M23 24V20C23 15.0294 27.0294 11 32 11C36.9706 11 41 15.0294 41 20V24" stroke="url(#nsGlow)" stroke-width="3.5" stroke-linecap="round" />
+  <!-- Corpo da Sacola + Letra N estilizada -->
+  <path d="M16 24H48L45.5 50C45.2 52.2 43.3 54 41 54H23C20.7 54 18.8 52.2 18.5 50L16 24Z" fill="url(#nsGrad)" fill-opacity="0.18" stroke="url(#nsGrad)" stroke-width="3" stroke-linejoin="round" />
+  <path d="M25 45V32L39 45V32" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
+

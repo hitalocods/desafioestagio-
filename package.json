@@ -1,0 +1,15 @@
+{
+  "name": "desafio-fullstack-ecommerce",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo do Desafio Técnico Full Stack E-commerce & Booking (Next.js + NestJS)",
+  "scripts": {
+    "install:all": "npm --prefix backend install --legacy-peer-deps && npm --prefix frontend install --legacy-peer-deps",
+    "dev:backend": "npm --prefix backend run start:dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:backend": "npm --prefix backend run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "test:backend": "npm --prefix backend test"
+  }
+}
+
