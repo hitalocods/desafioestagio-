@@ -12,6 +12,13 @@ import { fallbackStore } from './fallback-store';
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
+class BackendValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'BackendValidationError';
+  }
+}
+
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     let errorMessage = 'Ocorreu um erro ao comunicar com o servidor.';
@@ -27,9 +34,19 @@ async function handleResponse<T>(res: Response): Promise<T> {
     } catch {
       // ignora erro de parse
     }
-    throw new Error(errorMessage);
+    throw new BackendValidationError(errorMessage);
   }
   return res.json();
+}
+
+function shouldUseLocalFallback(): boolean {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname;
+  const isLocalHost = host === 'localhost' || host === '127.0.0.1';
+  const pointsToLocalBackend =
+    API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1');
+  // Se estiver aberto pelo celular ou na Vercel (.vercel.app) e a API apontar para localhost, usa fallback direto!
+  return !isLocalHost && pointsToLocalBackend;
 }
 
 export const api = {
@@ -38,6 +55,9 @@ export const api = {
     category?: string;
     search?: string;
   }): Promise<Product[]> {
+    if (shouldUseLocalFallback()) {
+      return fallbackStore.getProducts(params);
+    }
     try {
       const query = new URLSearchParams();
       if (params?.type && params.type !== 'ALL') {
@@ -61,6 +81,9 @@ export const api = {
   },
 
   async getCart(sessionId: string): Promise<CartState> {
+    if (shouldUseLocalFallback()) {
+      return fallbackStore.getCart(sessionId);
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/carrinho`, {
         headers: {
@@ -83,6 +106,9 @@ export const api = {
       booking?: BookingMetadata;
     },
   ): Promise<CartState> {
+    if (shouldUseLocalFallback()) {
+      return fallbackStore.addToCart(sessionId, payload);
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/carrinho`, {
         method: 'POST',
@@ -95,7 +121,7 @@ export const api = {
       });
       return await handleResponse<CartState>(res);
     } catch (err: any) {
-      if (err?.message && !err.message.includes('fetch')) {
+      if (err instanceof BackendValidationError) {
         throw err;
       }
       return fallbackStore.addToCart(sessionId, payload);
@@ -109,6 +135,9 @@ export const api = {
       quantity: number;
     },
   ): Promise<CartState> {
+    if (shouldUseLocalFallback()) {
+      return fallbackStore.updateCartItem(sessionId, payload);
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/carrinho`, {
         method: 'PUT',
@@ -126,6 +155,9 @@ export const api = {
   },
 
   async clearCart(sessionId: string): Promise<CartState> {
+    if (shouldUseLocalFallback()) {
+      return fallbackStore.clearCart(sessionId);
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/carrinho`, {
         method: 'DELETE',
@@ -144,6 +176,9 @@ export const api = {
     sessionId: string,
     payload: CheckoutFormValues,
   ): Promise<OrderResponse> {
+    if (shouldUseLocalFallback()) {
+      return fallbackStore.checkout(sessionId, payload);
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/finalizar-compra`, {
         method: 'POST',
@@ -156,7 +191,7 @@ export const api = {
       });
       return await handleResponse<OrderResponse>(res);
     } catch (err: any) {
-      if (err?.message && !err.message.includes('fetch')) {
+      if (err instanceof BackendValidationError) {
         throw err;
       }
       return fallbackStore.checkout(sessionId, payload);
@@ -164,6 +199,9 @@ export const api = {
   },
 
   async getOrders(): Promise<OrderSummary[]> {
+    if (shouldUseLocalFallback()) {
+      return fallbackStore.getOrders();
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/pedidos`, {
         cache: 'no-store',
