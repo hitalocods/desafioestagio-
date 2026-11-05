@@ -7,6 +7,8 @@ import {
   Clock,
   FileText,
   MapPin,
+  Minus,
+  Plus,
   Users,
   X,
 } from 'lucide-react';
@@ -70,6 +72,7 @@ export function BookingModal({
   if (!product) return null;
 
   const selectedTime = watch('checkInTime');
+  const selectedGuests = watch('guests') || 1;
   const selectedQuantity = watch('quantity') || 1;
   const estimatedSubtotal = product.price * selectedQuantity;
 
@@ -84,20 +87,26 @@ export function BookingModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-violet-600 to-indigo-600 p-6 text-white">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-white/15 backdrop-blur-sm">
-                <CalendarClock className="w-6 h-6" />
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/70 backdrop-blur-xs p-0 sm:p-4">
+      <div
+        className="fixed inset-0"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 w-full sm:max-w-lg max-h-[92dvh] sm:max-h-[90vh] bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border-t sm:border border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+        {/* Header Compacto */}
+        <div className="bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-4 sm:p-6 text-white shrink-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="p-2 rounded-xl bg-white/15 backdrop-blur-xs shrink-0">
+                <CalendarClock className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-violet-200">
+              <div className="min-w-0">
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-violet-200 block">
                   Reserva & Check-in Online
                 </span>
-                <h2 className="text-lg font-bold leading-snug">
+                <h2 className="text-sm sm:text-lg font-extrabold leading-snug line-clamp-2">
                   {product.name}
                 </h2>
               </div>
@@ -105,70 +114,51 @@ export function BookingModal({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+              className="p-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white transition-colors shrink-0 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
           {product.locationOrDuration && (
-            <div className="mt-3 flex items-center gap-1.5 text-xs text-violet-100">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>{product.locationOrDuration}</span>
+            <div className="mt-2 flex items-center gap-1.5 text-[11px] sm:text-xs text-violet-100 truncate">
+              <MapPin className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{product.locationOrDuration}</span>
             </div>
           )}
         </div>
 
-        {/* Form com React Hook Form + Zod */}
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                <span className="inline-flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-violet-600" />
-                  Data do Check-in *
-                </span>
-              </label>
-              <input
-                type="date"
-                min={new Date().toISOString().split('T')[0]}
-                {...register('checkInDate')}
-                className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-600/20"
-              />
-              {errors.checkInDate && (
-                <p className="mt-1 text-xs font-medium text-red-600">
-                  {errors.checkInDate.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                <span className="inline-flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-violet-600" />
-                  Participantes / Hóspedes *
-                </span>
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={20}
-                {...register('guests', { valueAsNumber: true })}
-                className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-600/20"
-              />
-              {errors.guests && (
-                <p className="mt-1 text-xs font-medium text-red-600">
-                  {errors.guests.message}
-                </p>
-              )}
-            </div>
+        {/* Form com Scroll Interno no Mobile */}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4"
+        >
+          {/* Data de Check-in */}
+          <div>
+            <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <span className="inline-flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-violet-600" />
+                Data do Check-in *
+              </span>
+            </label>
+            <input
+              type="date"
+              min={new Date().toISOString().split('T')[0]}
+              {...register('checkInDate')}
+              className="w-full rounded-xl border border-slate-300 bg-slate-50/60 px-3.5 py-2.5 text-base sm:text-sm font-semibold text-slate-900 focus:bg-white focus:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-600/20"
+            />
+            {errors.checkInDate && (
+              <p className="mt-1 text-xs font-medium text-rose-600">
+                {errors.checkInDate.message}
+              </p>
+            )}
           </div>
 
           {/* Seleção de Horário de Check-in */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+            <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
               <span className="inline-flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-violet-600" />
-                Horário de Check-in Disponível *
+                Escolha o Horário de Check-in *
               </span>
             </label>
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
@@ -182,90 +172,151 @@ export function BookingModal({
                       onClick={() =>
                         setValue('checkInTime', slot, { shouldValidate: true })
                       }
-                      className={`py-2 px-3 rounded-xl text-sm font-semibold border transition-all cursor-pointer ${
+                      className={`py-2.5 px-2 rounded-xl text-xs sm:text-sm font-extrabold border transition-all cursor-pointer flex items-center justify-center gap-1 ${
                         active
-                          ? 'bg-violet-600 text-white border-violet-600 shadow-sm'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-violet-300 hover:bg-violet-50/50'
+                          ? 'bg-violet-600 text-white border-violet-600 shadow-md shadow-violet-600/20 ring-2 ring-violet-600/20'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-violet-300'
                       }`}
                     >
-                      {slot}
+                      <Clock className="w-3 h-3 shrink-0 opacity-80" />
+                      <span>{slot}</span>
                     </button>
                   );
                 },
               )}
             </div>
             {errors.checkInTime && (
-              <p className="mt-1 text-xs font-medium text-red-600">
+              <p className="mt-1 text-xs font-medium text-rose-600">
                 {errors.checkInTime.message}
               </p>
             )}
           </div>
 
-          {/* Quantidade de Diárias / Sessões */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Quantidade de Diárias / Sessões *
-            </label>
-            <input
-              type="number"
-              min={1}
-              max={product.stock}
-              {...register('quantity', { valueAsNumber: true })}
-              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-600/20"
-            />
-            {errors.quantity && (
-              <p className="mt-1 text-xs font-medium text-red-600">
-                {errors.quantity.message}
-              </p>
-            )}
+          {/* Participantes e Quantidade de Diárias/Sessões lado a lado com botões +/- fáceis no touch */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/60">
+              <label className="block text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                <span className="inline-flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5 text-violet-600" />
+                  Pessoas / Hóspedes
+                </span>
+              </label>
+              <div className="flex items-center justify-between bg-white rounded-lg border border-slate-200 px-2 py-1">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setValue('guests', Math.max(1, selectedGuests - 1), {
+                      shouldValidate: true,
+                    })
+                  }
+                  className="p-1.5 text-slate-600 hover:text-violet-600 cursor-pointer"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <span className="text-sm font-extrabold text-slate-900">
+                  {selectedGuests}
+                </span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setValue('guests', Math.min(20, selectedGuests + 1), {
+                      shouldValidate: true,
+                    })
+                  }
+                  className="p-1.5 text-slate-600 hover:text-violet-600 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              {errors.guests && (
+                <p className="mt-1 text-[11px] font-medium text-rose-600">
+                  {errors.guests.message}
+                </p>
+              )}
+            </div>
+
+            <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/60">
+              <label className="block text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                Diárias / Sessões
+              </label>
+              <div className="flex items-center justify-between bg-white rounded-lg border border-slate-200 px-2 py-1">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setValue('quantity', Math.max(1, selectedQuantity - 1), {
+                      shouldValidate: true,
+                    })
+                  }
+                  className="p-1.5 text-slate-600 hover:text-violet-600 cursor-pointer"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <span className="text-sm font-extrabold text-slate-900">
+                  {selectedQuantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setValue(
+                      'quantity',
+                      Math.min(product.stock, selectedQuantity + 1),
+                      { shouldValidate: true },
+                    )
+                  }
+                  className="p-1.5 text-slate-600 hover:text-violet-600 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              {errors.quantity && (
+                <p className="mt-1 text-[11px] font-medium text-rose-600">
+                  {errors.quantity.message}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Observações */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
               <span className="inline-flex items-center gap-1.5">
                 <FileText className="w-3.5 h-3.5 text-violet-600" />
-                Observações ou Solicitações Especiais (Opcional)
+                Observações Especiais (Opcional)
               </span>
             </label>
             <textarea
               rows={2}
-              placeholder="Ex: Restrição alimentar, equipamento extra, chegada antecipada..."
+              placeholder="Ex: Chegada antecipada, equipamento extra..."
               {...register('notes')}
-              className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-600/20"
+              className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-base sm:text-sm text-slate-900 focus:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-600/20"
             />
-            {errors.notes && (
-              <p className="mt-1 text-xs font-medium text-red-600">
-                {errors.notes.message}
-              </p>
-            )}
           </div>
 
-          {/* Resumo de Valor */}
-          <div className="bg-violet-50/80 border border-violet-100 rounded-xl p-4 flex items-center justify-between">
-            <div>
-              <span className="text-xs text-violet-700 font-medium block">
-                Subtotal da Reserva ({selectedQuantity}x{' '}
-                {formatCurrency(product.price)})
+          {/* Rodapé de Ação e Subtotal Responsivo (Empilhado no Mobile, Lado a Lado no Desktop) */}
+          <div className="pt-2 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex sm:block items-baseline justify-between bg-violet-50/80 sm:bg-transparent px-3.5 py-2 sm:p-0 rounded-xl">
+              <span className="text-xs text-violet-700 font-semibold block">
+                Total ({selectedQuantity}x {formatCurrency(product.price)})
               </span>
-              <span className="text-lg font-extrabold text-violet-950">
+              <span className="text-lg sm:text-xl font-black text-violet-950">
                 {formatCurrency(estimatedSubtotal)}
               </span>
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                className="py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-700 text-white shadow-md transition-all disabled:opacity-50 cursor-pointer"
+                className="py-3 px-5 rounded-xl text-xs sm:text-sm font-extrabold bg-violet-600 hover:bg-violet-700 text-white shadow-lg shadow-violet-600/20 transition-all disabled:opacity-50 cursor-pointer"
               >
-                {isSubmitting ? 'Adicionando...' : 'Confirmar e Ir ao Carrinho'}
+                {isSubmitting ? 'Salvando...' : 'Confirmar Check-in'}
               </button>
             </div>
           </div>
@@ -274,4 +325,3 @@ export function BookingModal({
     </div>
   );
 }
-
